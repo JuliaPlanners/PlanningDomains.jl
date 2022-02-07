@@ -1,0 +1,11 @@
+name = "PlanningDomains"
+uuid = "34fa33c8-33e3-4e77-bac8-de592315aba2"
+authors = ["Xuan <tanqazx@gmail.com> and contributors"]
+version = "0.1.0"
+
+[deps]
+PDDL = "2c8894f9-daa1-498a-9e3a-26edd9623db8"
+
+[compat]
+PDDL = "0.2"
+julia = "1"
