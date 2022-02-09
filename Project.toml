@@ -4,8 +4,10 @@ authors = ["Xuan <tanqazx@gmail.com> and contributors"]
 version = "0.1.0"
 
 [deps]
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 PDDL = "2c8894f9-daa1-498a-9e3a-26edd9623db8"
 
 [compat]
+Downloads = "1.0"
 PDDL = "0.2"
-julia = "1"
+julia = "1.3"
