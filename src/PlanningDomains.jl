@@ -1,6 +1,6 @@
 module PlanningDomains
 
-export load_domain, load_problem
+export load_domain, load_problem, list_domains, list_problems
 export JuliaPlannersRepo, IPCInstancesRepo
 
 import PDDL.Parser: load_domain, load_problem, parse_domain, parse_problem
@@ -15,6 +15,13 @@ load_domain(::Type{T}, args...) where {T <: PlanningRepository} =
     load_domain(T(), args...)
 load_problem(::Type{T}, args...) where {T <: PlanningRepository} =
     load_problem(T(), args...)
+
+list_domains(::Type{T}, args...) where {T <: PlanningRepository} =
+    list_domains(T(), args...)
+list_problems(::Type{T}, arg, args...) where {T <: PlanningRepository} =
+    list_problems(T(), arg, args...)
+list_problems(::Type{T}, arg::Symbol, args...) where {T <: PlanningRepository} =
+    list_problems(T(), replace(string(arg), '_' => '-'), args...)
 
 load_domain(repo::PlanningRepository, name::Symbol) =
     load_domain(repo, replace(string(name), '_' => '-'))
@@ -42,6 +49,19 @@ end
 
 function load_problem(repo::JuliaPlannersRepo, domain::AbstractString, idx::Int)
     return load_problem(repo, domain, "problem-$idx")
+end
+
+function list_domains(repo::JuliaPlannersRepo)
+    return readdir(JULIA_PLANNERS_DIR)
+end
+
+function list_problems(repo::JuliaPlannersRepo, domain::AbstractString)
+    # Filter out non-problem files
+    fns = filter(readdir(joinpath(JULIA_PLANNERS_DIR, domain))) do fn
+        fn != "README.md" && fn != "domain.pddl"
+    end
+    # Strip .pddl suffix
+    return map(fn -> fn[1:end-5], fns)
 end
 
 ## Code for IPC Instances repository ##
@@ -120,5 +140,10 @@ load_domain(domain::Symbol) =
     load_domain(JuliaPlannersRepo(), domain)
 load_problem(domain::Symbol, problem) =
     load_problem(JuliaPlannersRepo(), domain, problem)
+
+list_domains() =
+    list_domains(JuliaPlannersRepo)
+list_problems(domain::Symbol) =
+    list_problems(JuliaPlannersRepo, domain)
 
 end
