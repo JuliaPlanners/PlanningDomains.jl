@@ -1,6 +1,7 @@
 module PlanningDomains
 
-export load_domain, load_problem, list_domains, list_problems
+export load_domain, load_problem
+export list_domains, list_problems
 export JuliaPlannersRepo, IPCInstancesRepo
 
 import PDDL.Parser: load_domain, load_problem, parse_domain, parse_problem
@@ -12,13 +13,59 @@ import Downloads
 "Abstract type for planning domain and problem repositories."
 abstract type PlanningRepository end
 
+"""
+    load_domain(repository, domain)
+    load_domain(repository, collection, domain)
+
+Load a domain from a planning `repository`. In some repositories, domains
+are also organized into `collection`s. The following repositores are
+currently supported:
+
+- `JuliaPlannersRepo`: no collections
+- `IPCInstancesRepo`: collection format: "ipc-YYYY"
+"""
 load_domain(::Type{T}, args...) where {T <: PlanningRepository} =
     load_domain(T(), args...)
+
+"""
+    load_problem(repository, domain, problem)
+    load_problem(repository, collection, domain, problem)
+
+Load a problem (specified as a name or index) from a planning `repository`
+for a given `domain`. In some repositories, domains are also organized
+into `collection`s. The following repositores are currently supported:
+
+- `JuliaPlannersRepo`: no collections, problem format "problem-N"
+- `IPCInstancesRepo`: collection format "ipc-YYYY", problem format "instance-N"
+"""
 load_problem(::Type{T}, args...) where {T <: PlanningRepository} =
     load_problem(T(), args...)
 
+"""
+    list_domains(repository)
+    list_domains(repository, collection)
+
+List domains in a planning `repository`. In some repositories, domains
+are also organized into `collection`s. The following repositores are
+currently supported:
+
+- `JuliaPlannersRepo`: no collections
+- `IPCInstancesRepo`: collection format: "ipc-YYYY"
+"""
 list_domains(::Type{T}, args...) where {T <: PlanningRepository} =
     list_domains(T(), args...)
+
+"""
+    list_problems(repository, domain)
+    list_problems(repository, collection, domain)
+
+List problems from a planning `repository` for a given `domain`. In some
+repositories, domains are also organized into `collection`s. The following
+repositores are currently supported:
+
+- `JuliaPlannersRepo`: no collections
+- `IPCInstancesRepo`: collection format "ipc-YYYY"
+"""
 list_problems(::Type{T}, arg, args...) where {T <: PlanningRepository} =
     list_problems(T(), arg, args...)
 list_problems(::Type{T}, arg::Symbol, args...) where {T <: PlanningRepository} =
@@ -220,13 +267,40 @@ end
 
 ## Default implementations ##
 
+"""
+    load_domain(domain::Symbol)
+
+Load a domain from the default repository (`JuliaPlannersRepo`). Underscores '_'
+in `domain` are automatically converted to dashes '-'.
+"""
 load_domain(domain::Symbol) =
     load_domain(JuliaPlannersRepo(), domain)
+
+"""
+    load_problem(domain::Symbol, problem)
+
+Load a problem from the default repository (`JuliaPlannersRepo`). Underscores '_'
+in `domain` are automatically converted to dashes '-'. Problems can be
+specified as either a name or an index.
+"""
 load_problem(domain::Symbol, problem) =
     load_problem(JuliaPlannersRepo(), domain, problem)
 
+"""
+    list_domains()
+
+List domains from the default repository (`JuliaPlannersRepo`). Underscores '_'
+in `domain` are automatically converted to dashes '-'.
+"""
 list_domains() =
     list_domains(JuliaPlannersRepo)
+
+"""
+    list_problems(domain::Symbol)
+
+List problems from the default repository (`JuliaPlannersRepo`). Underscores '_'
+in `domain` are automatically converted to dashes '-'.
+"""
 list_problems(domain::Symbol) =
     list_problems(JuliaPlannersRepo, domain)
 
