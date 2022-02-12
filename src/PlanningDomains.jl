@@ -4,18 +4,8 @@ export load_domain, load_problem, list_domains, list_problems
 export JuliaPlannersRepo, IPCInstancesRepo
 
 import PDDL.Parser: load_domain, load_problem, parse_domain, parse_problem
+import Scratch: get_scratch!, delete_scratch!
 import Downloads
-
-## Utility functions ##
-
-function timed_download(src, dst, timeout)
-    tmp_path, tmp_io = mktemp()
-    @info "Downloading $src to local cache..."
-    Downloads.download(src, tmp_io, timeout=timeout)
-    close(tmp_io)
-    mkpath(dirname(dst))
-    mv(tmp_path, dst)
-end
 
 ## Generic types and methods ##
 
@@ -39,13 +29,50 @@ load_domain(repo::PlanningRepository, name::Symbol) =
 load_problem(repo::PlanningRepository, domain::Symbol, problem) =
     load_problem(repo, replace(string(domain), '_' => '-'), problem)
 
+## Download and cache management utilities ##
+
+const CACHE_DIRS = Dict{String,String}()
+
+"Return or create local cache directory for a remote planning repository."
+function get_cache!(repo::T) where {T <: PlanningRepository}
+    return get!(CACHE_DIRS, string(T)) do
+        get_scratch!(@__MODULE__, string(T))
+    end
+end
+
+"Clear local cache directory associated with a remote planning repository."
+function clear_cache!(repo::T) where {T <: PlanningRepository}
+    delete_scratch!(@__MODULE__, string(T))
+    delete!(CACHE_DIRS, string(T))
+    return nothing
+end
+
+"Clear all local caches of remote planning repositories."
+function clear_all_caches!()
+    for repo in keys(CACHE_DIRS)
+        delete_scratch!(@__MODULE__, repo)
+    end
+    empty!(CACHE_DIRS)
+    return nothing
+end
+
+"Download `src` URL to `dst` path with a fixed timeout."
+function timed_download(src, dst, timeout)
+    tmp_path, tmp_io = mktemp()
+    @info "Downloading $src to local cache..."
+    Downloads.download(src, tmp_io, timeout=timeout)
+    close(tmp_io)
+    mkpath(dirname(dst))
+    mv(tmp_path, dst)
+end
+
 ## Code for JuliaPlanners repository ##
 
 "Repository provided by the JuliaPlanners organization."
 struct JuliaPlannersRepo <: PlanningRepository end
 
 const JULIA_PLANNERS_DIR =
-    joinpath(pkgdir(@__MODULE__), "repositories", "julia-planners")
+    normpath(dirname(pathof(@__MODULE__)), "..", "repositories", "julia-planners")
 
 function load_domain(repo::JuliaPlannersRepo, domain::AbstractString)
     domain_dir = joinpath(JULIA_PLANNERS_DIR, domain)
@@ -80,9 +107,6 @@ end
 "Repository of International Planning Competition domains and problems."
 struct IPCInstancesRepo <: PlanningRepository end
 
-const IPC_INSTANCES_DIR =
-    joinpath(pkgdir(@__MODULE__), "repositories", "ipc-instances")
-
 const IPC_INSTANCES_URL =
     "https://raw.githubusercontent.com/potassco/pddl-instances/master/"
 
@@ -98,7 +122,7 @@ end
 function load_domain(repo::IPCInstancesRepo,
                      ipc::AbstractString, domain::AbstractString)
     remote_path = IPC_INSTANCES_URL * "$ipc/domains/$domain/domain.pddl"
-    local_path = joinpath(IPC_INSTANCES_DIR, ipc, domain, "domain.pddl")
+    local_path = joinpath(get_cache!(repo), ipc, domain, "domain.pddl")
     if !isfile(local_path) # Download file if not already cached
         timed_download(remote_path, local_path, 5.0)
     end
@@ -108,7 +132,7 @@ end
 function load_problem(repo::IPCInstancesRepo, ipc::AbstractString,
                       domain::AbstractString, problem::AbstractString)
     remote_path = IPC_INSTANCES_URL * "/$ipc/domains/$domain/instances/$problem.pddl"
-    local_path = joinpath(IPC_INSTANCES_DIR, ipc, domain, "$problem.pddl")
+    local_path = joinpath(get_cache!(repo), ipc, domain, "$problem.pddl")
     if !isfile(local_path) # Download file if not already cached
         timed_download(remote_path, local_path, 5.0)
     end
@@ -148,7 +172,7 @@ function list_domains(repo::IPCInstancesRepo, ipc::AbstractString)
         error("Collection name must be in the format 'ipc-YYYY'.")
     end
     remote_path = IPC_INSTANCES_URL * "$ipc/README.md"
-    local_path = joinpath(IPC_INSTANCES_DIR, ipc, "README.md")
+    local_path = joinpath(get_cache!(repo), ipc, "README.md")
     if !isfile(local_path) # Download file if not already cached
         timed_download(remote_path, local_path, 5.0)
     end
@@ -179,7 +203,7 @@ function list_problems(repo::IPCInstancesRepo,
         error("Collection name must be in the format 'ipc-YYYY'.")
     end
     remote_path = IPC_INSTANCES_URL * "$ipc/domains/$domain/README.md"
-    local_path = joinpath(IPC_INSTANCES_DIR, ipc, domain, "README.md")
+    local_path = joinpath(get_cache!(repo), ipc, domain, "README.md")
     if !isfile(local_path) # Download file if not already cached
         timed_download(remote_path, local_path, 5.0)
     end
