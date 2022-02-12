@@ -96,7 +96,7 @@ end
 function list_problems(repo::JuliaPlannersRepo, domain::AbstractString)
     # Filter out non-problem files
     fns = filter(readdir(joinpath(JULIA_PLANNERS_DIR, domain))) do fn
-        fn != "README.md" && fn != "domain.pddl"
+        match(r".*\.pddl", fn) !== nothing && fn != "domain.pddl"
     end
     # Strip .pddl suffix
     return map(fn -> fn[1:end-5], fns)
