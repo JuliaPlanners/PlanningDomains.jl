@@ -2,6 +2,7 @@ module PlanningDomains
 
 export load_domain, load_problem
 export list_domains, list_problems
+export find_domains, find_problems
 export JuliaPlannersRepo, IPCInstancesRepo
 
 import PDDL.Parser: load_domain, load_problem, parse_domain, parse_problem
@@ -26,6 +27,8 @@ currently supported:
 """
 load_domain(::Type{T}, args...) where {T <: PlanningRepository} =
     load_domain(T(), args...)
+load_domain(repo::PlanningRepository, domain::Symbol) =
+    load_domain(repo, replace(string(domain), '_' => '-'))
 
 """
     load_problem(repository, domain, problem)
@@ -40,6 +43,8 @@ into `collection`s. The following repositores are currently supported:
 """
 load_problem(::Type{T}, args...) where {T <: PlanningRepository} =
     load_problem(T(), args...)
+load_problem(repo::PlanningRepository, domain::Symbol, problem) =
+    load_problem(repo, replace(string(domain), '_' => '-'), problem)
 
 """
     list_domains(repository)
@@ -71,10 +76,35 @@ list_problems(::Type{T}, arg, args...) where {T <: PlanningRepository} =
 list_problems(::Type{T}, arg::Symbol, args...) where {T <: PlanningRepository} =
     list_problems(T(), replace(string(arg), '_' => '-'), args...)
 
-load_domain(repo::PlanningRepository, name::Symbol) =
-    load_domain(repo, replace(string(name), '_' => '-'))
-load_problem(repo::PlanningRepository, domain::Symbol, problem) =
-    load_problem(repo, replace(string(domain), '_' => '-'), problem)
+"""
+    find_domains(repository, query)
+    find_domains(repository, collection, query)
+
+Find domains from a planning `repository` for a given `domain` that matches
+a `query`, which can be provided as a regular expression or (sub)string.
+"""
+function find_domains(repo::PlanningRepository, args...)
+    @assert !isempty(args) "Query needs to be specified."
+    args, query = args[1:end-1], args[end]
+    return filter!(s -> occursin(query, s), list_domains(repo, args...))
+end
+find_domains(::Type{T}, args...) where {T <: PlanningRepository} =
+    find_domains(T(), args...)
+
+"""
+    find_problems(repository, domain, query)
+    find_problems(repository, collection, domain, query)
+
+Find problems from a planning `repository` for a given `domain` that matches
+a `query`, which can be provided as a regular expression or (sub)string.
+"""
+function find_problems(repo::PlanningRepository, args...)
+    @assert !isempty(args) "Query needs to be specified."
+    args, query = args[1:end-1], args[end]
+    return filter!(s -> occursin(query, s), list_problems(repo, args...))
+end
+find_problems(::Type{T}, args...) where {T <: PlanningRepository} =
+    find_problems(T(), args...)
 
 ## Download and cache management utilities ##
 
@@ -296,12 +326,28 @@ list_domains() =
     list_domains(JuliaPlannersRepo)
 
 """
-    list_problems(domain::Symbol)
+    list_problems(domain)
 
 List problems from the default repository (`JuliaPlannersRepo`). Underscores '_'
 in `domain` are automatically converted to dashes '-'.
 """
-list_problems(domain::Symbol) =
+list_problems(domain) =
     list_problems(JuliaPlannersRepo, domain)
+
+"""
+    find_domains(query::Union{AbstractString,Regex})
+
+Find domains from the default repository (`JuliaPlannersRepo`).
+"""
+find_domains(query::Union{AbstractString,Regex}) =
+    find_domains(JuliaPlannersRepo, query)
+
+"""
+    find_problems(domain, query::Union{AbstractString,Regex})
+
+Find problems from the default repository (`JuliaPlannersRepo`).
+"""
+find_problems(domain, query::Union{AbstractString,Regex}) =
+    find_problems(JuliaPlannersRepo, domain, query)
 
 end

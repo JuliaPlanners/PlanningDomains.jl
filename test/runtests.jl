@@ -10,6 +10,8 @@ using PlanningDomains: clear_cache!, clear_all_caches!
         domain = load_domain(JuliaPlannersRepo, dname)
         problem = load_problem(JuliaPlannersRepo, dname, problem_names[1])
     end
+    @test find_domains(JuliaPlannersRepo, "blocks") == ["blocksworld"]
+    @test find_problems(JuliaPlannersRepo, "blocksworld", "1") == ["problem-1"]
 end
 
 @testset "IPC Instances repository" begin
@@ -24,6 +26,10 @@ end
         domain = load_domain(IPCInstancesRepo, dname)
         problem = load_problem(IPCInstancesRepo, dname, problem_names[1])
     end
+    @test find_domains(IPCInstancesRepo, "ipc-2000", "blocks") ==
+        ["blocks-strips-typed", "blocks-strips-untyped"]
+    @test find_problems(IPCInstancesRepo, "ipc-2000-blocks-strips-typed", "100") ==
+        ["instance-100"]
     clear_cache!(IPCInstancesRepo())
 end
 
