@@ -34,3 +34,23 @@ function timed_download(src, dst, timeout)
     mkpath(dirname(dst))
     mv(tmp_path, dst)
 end
+
+"Query a JSON endpoint if a local cache is not available."
+function cached_json_query(endpoint, cache)
+    if isfile(cache)
+        resp = open(cache) do f
+            JSON.parse(f)
+        end
+    else
+        @info "Downloading JSON response from $endpoint..."
+        json = HTTP.get(endpoint).body |> String
+        resp = JSON.parse(json)
+        if get(resp, "error", false)
+            error(resp["message"])
+        end
+        open(cache, "w") do f
+            write(f, json)
+        end
+    end
+    return resp
+end

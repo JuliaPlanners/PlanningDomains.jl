@@ -33,4 +33,22 @@ end
     clear_cache!(IPCInstancesRepo())
 end
 
+@testset "Planning Domains repository" begin
+    domain_names = list_domains(PlanningDomainsRepo)
+    @test !isempty(domain_names)
+    domain_names = list_domains(PlanningDomainsRepo, "IPC-2000")
+    @test !isempty(domain_names)
+    for dname in domain_names
+        problem_names = list_problems(PlanningDomainsRepo, dname)
+        @test !isempty(problem_names)
+        domain = load_domain(PlanningDomainsRepo, dname)
+        problem = load_problem(PlanningDomainsRepo, dname, problem_names[1])
+    end
+    @test find_domains(PlanningDomainsRepo, "IPC-2000", "blocks") ==
+        ["112-blocks"]
+    @test find_problems(PlanningDomainsRepo, "112-blocks", "probBLOCKS-4-0") ==
+        ["3966-probBLOCKS-4-0.pddl"]
+    clear_cache!(PlanningDomainsRepo())
+end
+
 clear_all_caches!()

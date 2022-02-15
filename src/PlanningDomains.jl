@@ -3,11 +3,11 @@ module PlanningDomains
 export load_domain, load_problem
 export list_domains, list_problems
 export find_domains, find_problems
-export JuliaPlannersRepo, IPCInstancesRepo
+export JuliaPlannersRepo, IPCInstancesRepo, PlanningDomainsRepo
 
 import PDDL.Parser: load_domain, load_problem, parse_domain, parse_problem
 import Scratch: get_scratch!, delete_scratch!
-import Downloads
+import Downloads, HTTP, JSON
 
 ## Generic types and methods ##
 
@@ -77,11 +77,25 @@ list_problems(::Type{T}, arg::Symbol, args...) where {T <: PlanningRepository} =
     list_problems(T(), replace(string(arg), '_' => '-'), args...)
 
 """
+    find_collections(repository, query)
+
+Find collections from a planning `repository` that match a `query`, which can
+be provided as a regular expression or (sub)string.
+"""
+function find_collections(repo::PlanningRepository, args...)
+    @assert !isempty(args) "Query needs to be specified."
+    args, query = args[1:end-1], args[end]
+    return filter!(s -> occursin(query, s), list_collections(repo, args...))
+end
+find_collections(::Type{T}, args...) where {T <: PlanningRepository} =
+    find_collections(T(), args...)
+
+"""
     find_domains(repository, query)
     find_domains(repository, collection, query)
 
-Find domains from a planning `repository` for a given `domain` that matches
-a `query`, which can be provided as a regular expression or (sub)string.
+Find domains from a planning `repository` that match a `query`, which can be
+provided as a regular expression or (sub)string.
 """
 function find_domains(repo::PlanningRepository, args...)
     @assert !isempty(args) "Query needs to be specified."
@@ -95,7 +109,7 @@ find_domains(::Type{T}, args...) where {T <: PlanningRepository} =
     find_problems(repository, domain, query)
     find_problems(repository, collection, domain, query)
 
-Find problems from a planning `repository` for a given `domain` that matches
+Find problems from a planning `repository` in a given `domain` that match
 a `query`, which can be provided as a regular expression or (sub)string.
 """
 function find_problems(repo::PlanningRepository, args...)
@@ -111,6 +125,7 @@ find_problems(::Type{T}, args...) where {T <: PlanningRepository} =
 include("cache_management.jl")
 include("julia_planners_repo.jl")
 include("ipc_instances_repo.jl")
+include("planning_domains_repo.jl")
 
 ## Default implementations ##
 
