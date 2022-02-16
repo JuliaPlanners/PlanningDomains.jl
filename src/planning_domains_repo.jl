@@ -1,6 +1,6 @@
 ## Code for planning.domains repository ##
 
-"Repository of domains and problems provided by `http://planning.domains/`."
+"Repository of domains and problems provided by http://planning.domains/."
 struct PlanningDomainsRepo <: PlanningRepository end
 
 const PLANNING_DOMAINS_API_URL =

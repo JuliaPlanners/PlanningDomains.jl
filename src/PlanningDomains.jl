@@ -14,16 +14,24 @@ import Downloads, HTTP, JSON
 "Abstract type for planning domain and problem repositories."
 abstract type PlanningRepository end
 
+const REPOS_DOCSTRING = """
+The following repositores are currently supported:
+
+- [`JuliaPlannersRepo`](@ref): Repository maintained by the JuliaPlanners organization
+- [`IPCInstancesRepo`](@ref): International Planning Competition domains and problems
+- [`PlanningDomainsRepo`](@ref): Repository provided by http://planning.domains/
+
+View the documentation of each repository for more information.
+"""
+
 """
     load_domain(repository, domain)
     load_domain(repository, collection, domain)
 
 Load a domain from a planning `repository`. In some repositories, domains
-are also organized into `collection`s. The following repositores are
-currently supported:
+are also organized into `collection`s.
 
-- `JuliaPlannersRepo`: no collections
-- `IPCInstancesRepo`: collection format: "ipc-YYYY"
+$REPOS_DOCSTRING
 """
 load_domain(::Type{T}, args...) where {T <: PlanningRepository} =
     load_domain(T(), args...)
@@ -36,10 +44,9 @@ load_domain(repo::PlanningRepository, domain::Symbol) =
 
 Load a problem (specified as a name or index) from a planning `repository`
 for a given `domain`. In some repositories, domains are also organized
-into `collection`s. The following repositores are currently supported:
+into `collection`s.
 
-- `JuliaPlannersRepo`: no collections, problem format "problem-N"
-- `IPCInstancesRepo`: collection format "ipc-YYYY", problem format "instance-N"
+$REPOS_DOCSTRING
 """
 load_problem(::Type{T}, args...) where {T <: PlanningRepository} =
     load_problem(T(), args...)
@@ -51,11 +58,9 @@ load_problem(repo::PlanningRepository, domain::Symbol, problem) =
     list_domains(repository, collection)
 
 List domains in a planning `repository`. In some repositories, domains
-are also organized into `collection`s. The following repositores are
-currently supported:
+are also organized into `collection`s.
 
-- `JuliaPlannersRepo`: no collections
-- `IPCInstancesRepo`: collection format: "ipc-YYYY"
+$REPOS_DOCSTRING
 """
 list_domains(::Type{T}, args...) where {T <: PlanningRepository} =
     list_domains(T(), args...)
@@ -65,11 +70,9 @@ list_domains(::Type{T}, args...) where {T <: PlanningRepository} =
     list_problems(repository, collection, domain)
 
 List problems from a planning `repository` for a given `domain`. In some
-repositories, domains are also organized into `collection`s. The following
-repositores are currently supported:
+repositories, domains are also organized into `collection`s.
 
-- `JuliaPlannersRepo`: no collections
-- `IPCInstancesRepo`: collection format "ipc-YYYY"
+$REPOS_DOCSTRING
 """
 list_problems(::Type{T}, arg, args...) where {T <: PlanningRepository} =
     list_problems(T(), arg, args...)
