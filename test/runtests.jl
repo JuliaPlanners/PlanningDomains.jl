@@ -57,4 +57,20 @@ end
     clear_cache!(PlanningDomainsRepo())
 end
 
+@testset "Default repository" begin
+    collection_names = list_collections()
+    @test isempty(collection_names)
+    domain_names = list_domains()
+    @test !isempty(domain_names)
+    for dname in domain_names
+        dname = Symbol(dname)
+        problem_names = list_problems(dname)
+        @test !isempty(problem_names)
+        domain = load_domain(dname)
+        problem = load_problem(dname, problem_names[1])
+    end
+    @test find_domains("blocks") == ["blocksworld"]
+    @test find_problems("blocksworld", "1") == ["problem-1"]
+end
+
 clear_all_caches!()
