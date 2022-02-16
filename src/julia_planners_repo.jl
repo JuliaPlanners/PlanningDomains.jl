@@ -21,6 +21,10 @@ function load_problem(repo::JuliaPlannersRepo, domain::AbstractString, idx::Int)
     return load_problem(repo, domain, "problem-$idx")
 end
 
+function list_collections(repo::JuliaPlannersRepo)
+    return String[]
+end
+
 function list_domains(repo::JuliaPlannersRepo)
     return readdir(JULIA_PLANNERS_DIR)
 end

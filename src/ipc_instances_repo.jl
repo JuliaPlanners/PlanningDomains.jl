@@ -55,10 +55,14 @@ function load_problem(repo::IPCInstancesRepo,
     return load_problem(repo, domain, "instance-$idx")
 end
 
-function list_domains(repo::IPCInstancesRepo)
+function list_collections(repo::IPCInstancesRepo)
     years = [1998, 2000, 2002, 2004, 2006, 2008, 2011, 2014]
-    domains = reduce(vcat, ("ipc-$y-" .* list_domains(repo, "ipc-$y")
-                            for y in years))
+    return ["ipc-$y" for y in years]
+end
+
+function list_domains(repo::IPCInstancesRepo)
+    domains = reduce(vcat, (c .* list_domains(repo, c)
+                            for c in list_collections(repo)))
     return domains
 end
 

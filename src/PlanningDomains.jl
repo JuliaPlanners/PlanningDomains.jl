@@ -1,8 +1,8 @@
 module PlanningDomains
 
 export load_domain, load_problem
-export list_domains, list_problems
-export find_domains, find_problems
+export list_collections, list_domains, list_problems
+export find_collections, find_domains, find_problems
 export JuliaPlannersRepo, IPCInstancesRepo, PlanningDomainsRepo
 
 import PDDL.Parser: load_domain, load_problem, parse_domain, parse_problem
@@ -52,6 +52,16 @@ load_problem(::Type{T}, args...) where {T <: PlanningRepository} =
     load_problem(T(), args...)
 load_problem(repo::PlanningRepository, domain::Symbol, problem) =
     load_problem(repo, replace(string(domain), '_' => '-'), problem)
+
+"""
+    list_collections(repository)
+
+List collections in a planning `repository`.
+
+$REPOS_DOCSTRING
+"""
+list_collections(::Type{T}, args...) where {T <: PlanningRepository} =
+    list_collections(T(), args...)
 
 """
     list_domains(repository)
