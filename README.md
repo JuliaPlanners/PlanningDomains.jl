@@ -7,7 +7,7 @@ A (meta)-repository of PDDL domains and problems. The following repositories are
 
 ## Usage
 
-#### Listing
+### Listing
 
 To list the domains provided by a repository, run `list_domains`:
 
@@ -44,7 +44,7 @@ julia> list_domains(IPCInstancesRepo, "ipc-2000")
  "schedule-adl-untyped"
 ```
 
-#### Loading
+### Loading
 
 To load a domain, specify the repository and domain name as arguments to `load_domain`. To load a problem, specify either the problem name or its index:
 ```julia
@@ -53,7 +53,7 @@ problem_1 = load_problem(JuliaPlannersRepo, "blocksworld", "problem-1")
 problem_2 = load_problem(JuliaPlannersRepo, "blocksworld", 2)
 ```
 
-#### Searching
+### Searching
 
 Collections, domains and problems can also be searched for using
 `find_collections`, `find_domains`, and `find_problems`, by providing a (sub)string or regular expression as a query:
@@ -76,6 +76,20 @@ julia> find_problems(PlanningDomainsRepo, "112-blocks", r"BLOCKS-4-\d.pddl")
  "3966-probBLOCKS-4-0.pddl"
 ```
 
-#### Cache Management
+### Default Repository
+
+All of the above functions can also be called with the first argument omitted, and with the domain name specified as a Symbol, in which case the default repository (`JuliaPlannersRepo`) will be assumed. Note that underscores in symbols will automatically be converted to hyphens:
+
+```julia
+# The following two functions load the same domain
+load_domain(:doors_keys_gems)
+load_domain(JuliaPlannersRepo, "doors-keys-gems")
+
+# The following two functions load the same problem
+load_problem(:zeno_travel, 1)
+load_problem(JuliaPlannersRepo, "zeno-travel", 1)
+```
+
+### Cache Management
 
 For repositories hosted online, PlanningDomains.jl maintains a local cache to reduce load times. However, this cache is not automatically updated if the remote repositories change. To manually clear the cache for a particular repository use `PlanningDomains.clear_cache!`. To clear all caches, use `PlanningDomains.clear_all_caches!`.
