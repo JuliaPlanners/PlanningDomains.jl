@@ -1,7 +1,7 @@
 name = "PlanningDomains"
 uuid = "34fa33c8-33e3-4e77-bac8-de592315aba2"
 authors = ["Xuan <tanqazx@gmail.com> and contributors"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
