@@ -12,7 +12,7 @@ using PlanningDomains: clear_cache!, clear_all_caches!
         domain = load_domain(JuliaPlannersRepo, dname)
         problem = load_problem(JuliaPlannersRepo, dname, problem_names[1])
     end
-    @test find_domains(JuliaPlannersRepo, "blocks") == ["blocksworld"]
+    @test find_domains(JuliaPlannersRepo, "blocks") == ["blocksworld", "blocksworld-axioms"]
     @test find_problems(JuliaPlannersRepo, "blocksworld", "1") == ["problem-1"]
 end
 
@@ -69,7 +69,7 @@ end
         domain = load_domain(dname)
         problem = load_problem(dname, problem_names[1])
     end
-    @test find_domains("blocks") == ["blocksworld"]
+    @test find_domains("blocks") == ["blocksworld", "blocksworld-axioms"]
     @test find_problems("blocksworld", "1") == ["problem-1"]
 end
 
