@@ -23,9 +23,9 @@ function ascii_to_pddl(str::String, name="gridworld-problem")
         end
     end
     append!(init, start)
-    problem = GenericProblem(
-        Symbol(name), :gridworld, Const[], Dict{Const,Symbol}(),
-        init, goal, nothing)
+    problem = GenericProblem(Symbol(name), :gridworld, Const[],
+                             Dict{Const,Symbol}(), init, goal,
+                             nothing, nothing)
     return problem
 end
 
@@ -37,7 +37,7 @@ end
 function convert_ascii_problem(path::String)
     str = open(f->read(f, String), path)
     str = ascii_to_pddl(str)
-    new_path = join(split(path, ".")[1:end-1]) * ".pddl"
+    new_path = splitext(path)[1] * ".pddl"
     write(new_path, write_problem(str))
     return new_path
 end

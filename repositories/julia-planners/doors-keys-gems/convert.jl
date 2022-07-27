@@ -40,7 +40,8 @@ function ascii_to_pddl(str::String, name="doors-keys-gems-problem")
                      Dict(k => :key for k in keys),
                      Dict(g => :gem for g in gems))
     problem = GenericProblem(Symbol(name), Symbol("doors-keys-gems"),
-                             [doors; keys; gems], objtypes, init, goal, nothing)
+                             [doors; keys; gems], objtypes, init, goal,
+                             nothing, nothing)
     return problem
 end
 
@@ -52,7 +53,7 @@ end
 function convert_ascii_problem(path::String)
     str = open(f->read(f, String), path)
     str = ascii_to_pddl(str)
-    new_path = join(split(path, ".")[1:end-1]) * ".pddl"
+    new_path = splitext(path)[1] * ".pddl"
     write(new_path, write_problem(str))
     return new_path
 end
