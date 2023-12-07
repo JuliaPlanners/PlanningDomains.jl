@@ -17,6 +17,9 @@ using PlanningDomains: clear_cache!, clear_all_caches!
 end
 
 @testset "IPC Instances repository" begin
+    domain_names = list_domains(IPCInstancesRepo)
+    @test !isempty(domain_names)
+    domain = load_domain(IPCInstancesRepo, domain_names[1])
     collection_names = list_collections(IPCInstancesRepo)
     @test !isempty(collection_names)
     domain_names = list_domains(IPCInstancesRepo)
