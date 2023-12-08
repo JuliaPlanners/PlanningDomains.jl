@@ -72,7 +72,7 @@ function list_collections(repo::IPCInstancesRepo)
 end
 
 function list_domains(repo::IPCInstancesRepo)
-    domains = reduce(vcat, (c .* list_domains(repo, c)
+    domains = reduce(vcat, (c * "-" .* list_domains(repo, c)
                             for c in list_collections(repo)))
     return domains
 end
