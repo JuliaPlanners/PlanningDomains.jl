@@ -45,7 +45,7 @@ end
     @test !isempty(collection_names)
     domain_names = list_domains(PlanningDomainsRepo)
     @test !isempty(domain_names)
-    domain_names = list_domains(PlanningDomainsRepo, "IPC-2000")
+    domain_names = list_domains(PlanningDomainsRepo, "IPC-1998")
     @test !isempty(domain_names)
     for dname in domain_names
         problem_names = list_problems(PlanningDomainsRepo, dname)
