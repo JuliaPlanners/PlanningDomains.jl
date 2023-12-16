@@ -39,12 +39,12 @@ end
 function cached_json_query(endpoint, cache)
     if isfile(cache)
         resp = open(cache) do f
-            JSON.parse(f)
+            JSON3.read(f)
         end
     else
         @info "Downloading JSON response from $endpoint..."
         json = HTTP.get(endpoint).body |> String
-        resp = JSON.parse(json)
+        resp = JSON3.read(json)
         if get(resp, "error", false)
             error(resp["message"])
         end

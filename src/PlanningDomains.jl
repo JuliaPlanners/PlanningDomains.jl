@@ -7,7 +7,7 @@ export JuliaPlannersRepo, IPCInstancesRepo, PlanningDomainsRepo
 
 import PDDL.Parser: load_domain, load_problem, parse_domain, parse_problem
 import Scratch: get_scratch!, delete_scratch!
-import Downloads, HTTP, JSON
+import Downloads, HTTP, JSON3
 
 ## Generic types and methods ##
 
