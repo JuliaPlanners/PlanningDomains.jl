@@ -13,10 +13,12 @@ To list the domains provided by a repository, run `list_domains`:
 
 ```julia
 list_domains(JuliaPlannersRepo)
-4-element Vector{String}:
+6-element Vector{String}:
  "blocksworld"
+ "blocksworld-axioms"
  "doors-keys-gems"
  "gridworld"
+ "wolf-goat-cabbage"
  "zeno-travel"
 ```
 
